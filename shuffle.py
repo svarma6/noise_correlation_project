@@ -33,16 +33,22 @@ def shuffle_noise_correlation(df,response):
 
 def main():
     
-    # directory of .mat data files
+    # example usage:
+    
+    # directory of data files containing pandas dataframes
     dataDir = "/Users/Dimitri/Dropbox (SensorimotorSuperlab)/project9637/Data/preprocessed/"
     #names of files to load
-    file_names = ['C_1',
-                  'C_2',
-                  'H_1',
-                  'H_2']
+    file_names = ['C_1_binned.pkl',
+                  'C_2_binned.pkl',
+                  'H_1_binned.pkl',
+                  'H_2_binned.pkl']
+    #load the first file for an axample
     filei = 0
-    df = pd.read_pickle(dataDir + file_names[filei] + '_binned' + '.pkl')
+    df = pd.read_pickle(dataDir + file_names[filei])
+    
+    # drop the columns except for the target variable and the neurons
     df = df.drop('passive',axis=1)
     df = df.drop('direction',axis=1)
+    # shuffle the data
     df_shuffle = shuffle_noise_correlation(df,'directions_x_passive')
 
