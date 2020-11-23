@@ -1,27 +1,43 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score
 import pandas as pd
 import statsmodels.api as sm
-from statsmodels.formula.api import ols
+from statsmodels.stats.contingency_tables import mcnemar
 
-#Active Unshuffled
-AU_performance= accuracy_score(ytest_au,  model.predict(Xtest_au))
 
-#Passive Unshuffled 
-PU_performance= accuracy_score(ytest_pu,  model.predict(Xtest_pu))
 
-#Active Shuffled
-AS_performance= accuracy_score(ytest_as,  model.predict(Xtest_as)) 
+#what  df should look like after classification 
+#Y column should be target
+#Classification_US should be the y_pred for the unshuffled model
+#Classification_S should be the y_pred for the shuffled model
 
-#Passive Shuffled 
-PS_performance= accuracy_score(ytest_ps,  model.predict(Xtest_ps)) 
+df = pd.DataFrame(columns=['trial', 'Y', 'Classification_US', 'Classification_S' ])
 
-#dataframe=pd.DataFrame(AU_performance,PU_performance, AS_performance, PS_performance, columns=['Active Unshuffled', 'Passive Unshuffled', 'Active Shuffled', 'Passive Shuffled'] )
+#this is juts sample data 
+for i in range(50):
+    df.loc[i]=[str(i)] +[np.random.randint(0,2) for n in range(3)]
 
-#2 way anova 
-anova_model = ols('performance ~ C(conition) + C(shuffling) + C(condition):C(shuffling)', data=df).fit()
-sm.stats.anova_lm(model, typ=2)
+#change 'Classification_US', 'Classification_S'  to if the prediction was correc or not
+df.Classification_US= (df.Classification_US.values==df.Y.values).astype(int)
+df.Classification_S= (df.Classification_S.values==df.Y.values).astype(int)
 
-#Tukeys HSD
-import statsmodels.stats.multicomp.pairwise_tukeyhsd
+print(df)
+
+#contingency table 
+trials=df.Classification_US.values.shape[0]
+
+contingincey_table= [[np.sum(df.Classification_US.values), np.sum(df.Classification_S.values)],
+                     [trials-(np.sum(df.Classification_US.values)), trials-(np.sum(df.Classification_S.values))]]
+
+#Mcnmar's test
+result = mcnemar(contingincey_table, exact=True)
+# summarize the finding
+print('statistic=%.3f, p-value=%.3f' % (result.statistic, result.pvalue))
+# interpret the p-value
+alpha = 0.05
+if result.pvalue > alpha:
+    print('Same proportions of errors (fail to reject H0)')
+else:
+    print('Different proportions of errors (reject H0)')
+    
+    
