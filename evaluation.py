@@ -19,9 +19,9 @@ for i in range(50):
     
     
 #confusion matrices for both
+c_mat_US=confusion_matrix(df.Y.values.astype(int), df.Classification_US.values.astype(int))
+c_mat_S=confusion_matrix(df.Y.values.astype(int), df.Classification_S.values.astype(int))
 
-c_mat_US=confusion_matrix(df.Y.values, df.Classification_US.values)
-c_mat_S=confusion_matrix(df.Y.values, df.Classification_S.values)
 
 #change 'Classification_US', 'Classification_S'  to if the prediction was correc or not
 df.Classification_US= (df.Classification_US.values==df.Y.values).astype(int)
