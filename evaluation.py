@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
 from statsmodels.stats.contingency_tables import mcnemar
-
+from sklearn.metrics import confusion_matrix
 
 
 #what  df should look like after classification 
@@ -16,6 +16,12 @@ df = pd.DataFrame(columns=['trial', 'Y', 'Classification_US', 'Classification_S'
 #this is juts sample data 
 for i in range(50):
     df.loc[i]=[str(i)] +[np.random.randint(0,2) for n in range(3)]
+    
+    
+#confusion matrices for both
+
+c_mat_US=confusion_matrix(df.Y.values, df.Classification_US.values)
+c_mat_S=confusion_matrix(df.Y.values, df.Classification_S.values)
 
 #change 'Classification_US', 'Classification_S'  to if the prediction was correc or not
 df.Classification_US= (df.Classification_US.values==df.Y.values).astype(int)
