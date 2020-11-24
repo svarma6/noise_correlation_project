@@ -4,6 +4,7 @@ import pandas as pd
 import statsmodels.api as sm
 from statsmodels.stats.contingency_tables import mcnemar
 from sklearn.metrics import confusion_matrix
+from scipy.stats import chi2_contingency
 
 
 #what  df should look like after classification 
@@ -11,11 +12,11 @@ from sklearn.metrics import confusion_matrix
 #Classification_US should be the y_pred for the unshuffled model
 #Classification_S should be the y_pred for the shuffled model
 
-df = pd.DataFrame(columns=['trial', 'Y', 'Classification_US', 'Classification_S' ])
+df = pd.DataFrame(columns=['trial', 'Movement', 'Y', 'Classification_US', 'Classification_S' ])
 
 #this is juts sample data 
 for i in range(50):
-    df.loc[i]=[str(i)] +[np.random.randint(0,2) for n in range(3)]
+    df.loc[i]=[str(i)] +[np.random.randint(0,2) for n in range(4)]
     
     
 #confusion matrices for both
@@ -46,4 +47,23 @@ if result.pvalue > alpha:
 else:
     print('Different proportions of errors (reject H0)')
     
-    
+      
+#Compare values specificically for passive and active 
+
+data_passive=df.loc[df['Movement'] == 0]
+data_active=df.loc[df['Movement'] == 1]
+
+
+active_trials=data_active.Classification_US.values.shape[0]
+passive_trials=data_passive.Classification_US.values.shape[0]
+
+big_contingincey_table= [[np.sum(data_passive.Classification_US.values),
+                          np.sum(data_passive.Classification_S.values),
+                          np.sum(data_active.Classification_US.values),
+                          np.sum(data_active.Classification_S.values)],
+                         [passive_trials-(np.sum(data_passive.Classification_US.values)),
+                          passive_trials-(np.sum(data_passive.Classification_S.values)),
+                          active_trials-(np.sum(data_active.Classification_US.values)), 
+                          active_trials-(np.sum(data_active.Classification_S.values))]]
+  
+chi2_contingency(big_contingincey_table)
