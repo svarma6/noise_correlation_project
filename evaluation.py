@@ -66,4 +66,7 @@ big_contingincey_table= [[np.sum(data_passive.Classification_US.values),
                           active_trials-(np.sum(data_active.Classification_US.values)), 
                           active_trials-(np.sum(data_active.Classification_S.values))]]
   
-chi2_contingency(big_contingincey_table)
+val, p, dof, expected= chi2_contingency(big_contingincey_table)
+
+#which values are different than expected 
+big_contingincey_table- expected
