@@ -8,6 +8,19 @@ import statsmodels.api as sm
 from statsmodels.stats.contingency_tables import mcnemar
 from sklearn.metrics import confusion_matrix
 from scipy.stats import chi2_contingency
+from sklearn.metrics import accuracy_score
+import pandas as pd
+import statsmodels.api as sm
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
+from scipy.special import comb
+from statsmodels.stats.contingency_tables import mcnemar
+from sklearn.metrics import confusion_matrix
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import make_scorer
 
 
 #what  df should look like after classification 
@@ -86,7 +99,8 @@ def BootstrapCoef(data,numboot, numfeatures):
     for i in range(numboot):
         d = data.sample(n, replace=True)
         X_fit = np.c_[d.X1, d.X2] #add total number of features 
-        accuracy= model.fit(X_fit,d.Y).score(X_fit,d.Y)
+        cver = StratifiedKFold(n_splits = 5)
+        accuracy = cross_val_score(clf, X_fit,d.Y, cv=cver, scoring = 'accuracy')
     return accuracy
 
 unshuffled_errors = BootstrapCoef(df,numboot, numfeatures)
