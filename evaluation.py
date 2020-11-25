@@ -1,3 +1,6 @@
+#Author: Sonia Yasmin
+#email: soniayasmin1995@gmail.com
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -70,3 +73,34 @@ val, p, dof, expected= chi2_contingency(big_contingincey_table)
 
 #which values are different than expected 
 big_contingincey_table- expected
+
+#post-hoc test 
+
+#Bootstrapping 
+
+def BootstrapCoef(data,numboot, numfeatures):
+    model = svm.SVC() #whatever classifier we end up making 
+    numboot = 1000
+    n = len(data)
+    theta = np.zeros((numboot, numfeatures))    
+    for i in range(numboot):
+        d = data.sample(n, replace=True)
+        X_fit = np.c_[d.X1, d.X2] #add total number of features 
+        accuracy= model.fit(X_fit,d.Y).score(X_fit,d.Y)
+    return accuracy
+
+unshuffled_errors = BootstrapCoef(df,numboot, numfeatures)
+shuffled_errors = BootstrapCoef(df,numboot, numfeatures)
+
+bs_us_res = unshuffled_errors- clf.fit(X_fit,d.Y).score(X_fit,d.Y)
+bs_s_res = shuffled_errors- clf2.fit(X_fit,d.Y).score(X_fit,d.Y)
+
+plt.hist(bs_us_res, edgecolor = 'white', density=True)
+
+us_ci_lower, us_ci_upper = np.quantile(bs_us_res, [0.025, 0.975])
+us_boot_ci = [clf.fit(X_fit,d.Y).score(X_fit,d.Y) - us_ci_upper, 
+           clf.fit(X_fit,d.Y).score(X_fit,d.Y) - us_ci_lower]
+
+s_ci_lower, s_ci_upper = np.quantile(bs_s_res, [0.025, 0.975])
+s_boot_ci = [clf.fit(X_fit,d.Y).score(X_fit,d.Y) - s_ci_upper, 
+           clf.fit(X_fit,d.Y).score(X_fit,d.Y) - s_ci_lower]
