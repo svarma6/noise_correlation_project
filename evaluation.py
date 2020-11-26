@@ -28,11 +28,11 @@ from sklearn.metrics import make_scorer
 #Classification_US should be the y_pred for the unshuffled model
 #Classification_S should be the y_pred for the shuffled model
 
-df = pd.DataFrame(columns=['trial', 'Movement', 'Y', 'Classification_US', 'Classification_S' ])
+df = pd.DataFrame(columns=['trial','X', 'X2', 'Movement', 'Y', 'Classification_US', 'Classification_S' ])
 
 #this is juts sample data 
 for i in range(50):
-    df.loc[i]=[str(i)] +[np.random.randint(0,2) for n in range(4)]
+    df.loc[i]=[str(i)] +[np.random.randint(0,2) for n in range(6)]
     
     
 #confusion matrices for both
@@ -49,8 +49,13 @@ print(df)
 #contingency table 
 trials=df.Classification_US.values.shape[0]
 
-contingincey_table= [[np.sum(df.Classification_US.values), np.sum(df.Classification_S.values)],
-                     [trials-(np.sum(df.Classification_US.values)), trials-(np.sum(df.Classification_S.values))]]
+yUS_yS= df.loc[(df['Classification_US'] == 1) & (df['Classification_S'] == 1)]
+nUS_yS= df.loc[(df['Classification_US'] == 0) & (df['Classification_S'] == 1)]
+yUS_nS= df.loc[(df['Classification_US'] == 1) & (df['Classification_S'] == 0)]
+nUS_nS= df.loc[(df['Classification_US'] == 0) & (df['Classification_S'] == 0)]
+
+contingincey_table= [[len(yUS_yS), len(yUS_nS)],
+                     [len(nUS_yS),len(nUS_nS) ]]
 
 #Mcnmar's test
 result = mcnemar(contingincey_table, exact=True)
