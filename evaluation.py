@@ -78,7 +78,7 @@ data_active=df.loc[df['Movement'] == 1]
 active_trials=data_active.Classification_US.values.shape[0]
 passive_trials=data_passive.Classification_US.values.shape[0]
 
-big_contingincey_table= [[np.sum(data_passive.Classification_US.values),
+frequency_table= [[np.sum(data_passive.Classification_US.values),
                           np.sum(data_passive.Classification_S.values),
                           np.sum(data_active.Classification_US.values),
                           np.sum(data_active.Classification_S.values)],
@@ -87,12 +87,12 @@ big_contingincey_table= [[np.sum(data_passive.Classification_US.values),
                           active_trials-(np.sum(data_active.Classification_US.values)), 
                           active_trials-(np.sum(data_active.Classification_S.values))]]
   
-val, p, dof, expected= chi2_contingency(big_contingincey_table)
+val, p, dof, expected= chi2_contingency(frequency_table)
 
 #which values are different than expected 
-big_contingincey_table- expected
+frequency_table- expected
 
-#post-hoc test 
+#post-hoc test? 
 
 #Bootstrapping 
 
@@ -100,7 +100,7 @@ def BootstrapCoef(data,numboot, numfeatures):
     model = svm.SVC() #whatever classifier we end up making 
     numboot = 1000
     n = len(data)
-    theta = np.zeros((numboot, numfeatures))    
+    accuracy = np.zeros((numboot, 1))    
     for i in range(numboot):
         d = data.sample(n, replace=True)
         X_fit = np.c_[d.X1, d.X2] #add total number of features 
